@@ -26,6 +26,12 @@
     {% endif %}
   </head>
   <body>
+    {% for type, messages in app.flashes %}
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    {% endfor %}
+
     {% include 'menu.html.twig' %}
     {% block body %}
 
