@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Tag;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Article;
@@ -21,6 +22,13 @@ class AppFixtures extends Fixture
         "Économie"
     ];
 
+    private const array TAGS = [
+        "Solo",
+        "Duo",
+        "Trio",
+        "Group"
+    ];
+
     public function __construct(private SluggerInterface $slugger)
     {
     }
@@ -37,6 +45,16 @@ class AppFixtures extends Fixture
             $categories[] = $category;
         }
 
+        $tags = [];
+
+        foreach (self::TAGS as $tagLabel) {
+            $tag = new Tag();
+            $tag->setLabel($tagLabel);
+
+            $manager->persist($tag);
+            $tags[] = $tag;
+        }
+
         for ($i = 0; $i < self::NB_ARTICLES; $i++) {
             $title = $faker->realText(50);
             $slug = strtolower($this->slugger->slug($title));
@@ -49,6 +67,14 @@ class AppFixtures extends Fixture
                 ->setVisible($faker->boolean(80))
                 ->setCategory($faker->randomElement($categories))
             ;
+
+            $nbTags = $faker->numberBetween(0, count(self::TAGS));
+            $articleTags = $faker->randomElements($tags, $nbTags);
+
+            foreach ($articleTags as $articleTag) {
+                $article->addTag($articleTag);
+            }
+
             $manager->persist($article);
         }
 

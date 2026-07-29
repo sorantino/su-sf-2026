@@ -3,6 +3,10 @@
 {% block body %}
   <h1>{{ article.title }}</h1>
 
+  <h2>
+    {{ article.tags|map(t => "#{t.label}")|join(', ') }}
+  </h2>
+
   <h3>{{ article.createdAt|date('d/m/y') }}</h3>
 
   <div>{{ article.content }}</div>
