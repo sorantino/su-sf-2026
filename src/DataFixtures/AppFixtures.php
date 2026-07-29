@@ -3,11 +3,13 @@
 namespace App\DataFixtures;
 
 use App\Entity\Tag;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Article;
 use App\Entity\Category;
 use Faker\Factory;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AppFixtures extends Fixture
@@ -29,13 +31,31 @@ class AppFixtures extends Fixture
         "Group"
     ];
 
-    public function __construct(private SluggerInterface $slugger)
-    {
+    public function __construct(
+        private SluggerInterface $slugger,
+        private UserPasswordHasherInterface $hasher
+    ) {
     }
 
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
+
+        $regularUser = new User();
+        $regularUser
+            ->setEmail('regular@sf-news.com')
+            ->setPassword($this->hasher->hashPassword($regularUser, 'regular'));
+
+        $manager->persist($regularUser);
+
+        $adminUser = new User();
+        $adminUser
+            ->setEmail('admin@sf-news.com')
+            ->setPassword($this->hasher->hashPassword($adminUser, 'admin'))
+            ->setRoles(['ROLE_ADMIN']);
+
+        $manager->persist($adminUser);
+
         $categories = [];
 
         foreach (self::CATEGORIES as $categoryName) {
