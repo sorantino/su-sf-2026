@@ -7,13 +7,11 @@ use App\Entity\Contact;
 use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
 use App\Repository\ContactRepository;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/admin')]
 final class AdminController extends AbstractController
@@ -21,8 +19,7 @@ final class AdminController extends AbstractController
     #[Route('/articles/add', name: 'article_add')]
     public function articleAdd(
         Request $request,
-        EntityManagerInterface $em,
-        SluggerInterface $slugger
+        EntityManagerInterface $em
     ): Response {
         $article = new Article();
         $form = $this->createForm(ArticleType::class, $article);
@@ -30,9 +27,6 @@ final class AdminController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $article
-                ->setCreatedAt(new DateTimeImmutable())
-                ->setSlug($slugger->slug($article->getTitle()));
             $em->persist($article);
             $em->flush();
         }
