@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Demandes de contact
+{% endblock %}
+
+{% block body %}
+    <h1>Demandes de contact</h1>
+
+    {% for contact in contacts %}
+        <div>
+            <div>{{ contact.createdAt|date('d/m/Y') }} - {{ contact.firstname }} {{ contact.name }}</div>
+            <div>Sujet : {{ contact.subject }}</div>
+            <div>Message : {{ contact.message }}</div>
+        </div>
+    {% else %}
+        <div>Aucune demande de contact</div>
+    {% endfor %}
+{% endblock %}
