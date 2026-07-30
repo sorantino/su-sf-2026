@@ -43,6 +43,8 @@ class AppFixtures extends Fixture
 
         $regularUser = new User();
         $regularUser
+            ->setName($faker->lastName)
+            ->setFirstname($faker->firstName)
             ->setEmail('regular@sf-news.com')
             ->setPassword($this->hasher->hashPassword($regularUser, 'regular'));
 
@@ -50,6 +52,8 @@ class AppFixtures extends Fixture
 
         $adminUser = new User();
         $adminUser
+            ->setName($faker->lastName)
+            ->setFirstname($faker->firstName)
             ->setEmail('admin@sf-news.com')
             ->setPassword($this->hasher->hashPassword($adminUser, 'admin'))
             ->setRoles(['ROLE_ADMIN']);

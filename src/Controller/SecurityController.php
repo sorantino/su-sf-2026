@@ -2,8 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Newsletter;
+use App\Entity\User;
+use App\Form\InscriptionType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -28,5 +34,34 @@ class SecurityController extends AbstractController
     public function logout(): void
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+    }
+
+    #[Route(path: '/register', name: 'app_register')]
+    public function register(
+        Request $request,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $hasher,
+    ): Response {
+        $user = new User();
+        $form = $this->createForm(InscriptionType::class, $user);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $plainPassword = $form->get('plainPassword')->getData();
+            $user->setPassword($hasher->hashPassword($user, $plainPassword));
+            $em->persist($user);
+
+            if ($form->get('newsletter')->getData()) {
+                $newsletter = new Newsletter();
+                $newsletter->setEmail($user->getEmail());
+                $em->persist($newsletter);
+            }
+            $em->flush();
+        }
+
+        return $this->render('security/register.html.twig', [
+            'form'=>$form,
+        ]);
+
     }
 }
