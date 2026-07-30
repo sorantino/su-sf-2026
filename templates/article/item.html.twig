@@ -9,5 +9,7 @@
 
   <h3>{{ article.createdAt|date('d/m/y') }}</h3>
 
+  <div>Auteur : {{ article.author.firstname }} {{ article.author.name }}</div>
+
   <div>{{ article.content }}</div>
 {% endblock %}

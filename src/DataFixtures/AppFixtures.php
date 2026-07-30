@@ -60,6 +60,8 @@ class AppFixtures extends Fixture
 
         $manager->persist($adminUser);
 
+        $authors = [$regularUser, $adminUser];
+
         $categories = [];
 
         foreach (self::CATEGORIES as $categoryName) {
@@ -90,6 +92,7 @@ class AppFixtures extends Fixture
                 ->setContent($faker->paragraphs($faker->numberBetween(3, 9), true))
                 ->setVisible($faker->boolean(80))
                 ->setCategory($faker->randomElement($categories))
+                ->setAuthor($faker->randomElement($authors))
             ;
 
             $nbTags = $faker->numberBetween(0, count(self::TAGS));
